@@ -201,7 +201,7 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
      * @param coleccion la colección a partir de la cual creamos el árbol
      *        binario.
      */
-    public ArbolBinario(Coleccion<T> coleccion) { // _________________________________________ HACE FALTA
+    public ArbolBinario(Coleccion<T> coleccion) {
         // Aquí va su código.
         if (coleccion.esVacia()) {
             return;

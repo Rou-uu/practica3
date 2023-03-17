@@ -75,14 +75,35 @@ public class ArbolBinarioCompleto<T> extends ArbolBinario<T> {
         if (elemento == null)
             throw new IllegalArgumentException();
         
-        if (esVacia()){
+        if (esVacia()) {
             Vertice v = nuevoVertice(elemento);
             raiz = v;
             elementos = 1;
         }
-        
-        
-        
+
+        Cola<Vertice> cola = new Cola<Vertice>();
+        cola.mete(raiz);
+
+        while (!cola.esVacia()) {
+            Vertice n = cola.saca();
+
+            if (n.izquierdo == null) {
+                Vertice temp = nuevoVertice(elemento);
+                n.izquierdo = temp;
+                temp.padre = n;
+                return;
+            }
+
+            if (n.derecho == null) {
+                Vertice temp = nuevoVertice(elemento);
+                n.derecho = temp;
+                temp.padre = n;
+                return;
+            }
+
+            cola.mete(n.izquierdo);
+            cola.mete(n.derecho);
+        }
     }
     
 
@@ -94,6 +115,33 @@ public class ArbolBinarioCompleto<T> extends ArbolBinario<T> {
      */
     @Override public void elimina(T elemento) {
         // Aquí va su código.
+        if(esVacia() || elemento == null)
+            return;
+
+        Cola<Vertice> cola = new Cola<>();
+        cola.mete(raiz);
+
+        Vertice ultimo = null;
+
+        while (!cola.esVacia()){
+            Vertice temp = cola.saca();
+            ultimo = temp;
+
+            if (temp.izquierdo != null)
+                cola.mete(temp.izquierdo);
+
+            if (temp.derecho != null)
+                cola.mete(temp.derecho);
+        }
+
+        while (!cola.esVacia()) {
+            Vertice n = cola.saca();
+
+            if (n.elemento.equals(elemento)) {
+
+            }
+        }
+
     }
 
     /**
@@ -123,6 +171,19 @@ public class ArbolBinarioCompleto<T> extends ArbolBinario<T> {
      */
     public void bfs(AccionVerticeArbolBinario<T> accion) {
         // Aquí va su código.
+        Cola<Vertice> cola = new Cola<Vertice>();
+        cola.mete(raiz);
+
+        while (!cola.esVacia()) {
+            Vertice n = cola.saca();
+            accion.actua(n);
+
+            if (n.izquierdo != null)
+                cola.mete(n.izquierdo);
+
+            if (n.derecho != null)
+                cola.mete(n.derecho);
+        }
     }
 
     /**
