@@ -19,17 +19,31 @@ public class ArbolBinarioCompleto<T> extends ArbolBinario<T> {
         /* Inicializa al iterador. */
         private Iterador() {
             // Aquí va su código.
-            return new Iterador;
+            cola.mete(raiz);
         }
 
         /* Nos dice si hay un elemento siguiente. */
         @Override public boolean hasNext() {
             // Aquí va su código.
+            return cola.esVacia();
         }
 
         /* Regresa el siguiente elemento en orden BFS. */
         @Override public T next() {
             // Aquí va su código.
+            if (hasNext()) {
+                Vertice temp = cola.saca();
+                
+                if (temp.izquierdo != null)
+                    cola.mete(temp.izquierdo);
+                
+                if (temp.derecho != null)
+                    cola.mete(temp.derecho);
+                
+                return temp.elemento;
+            }
+            
+            return null;
         }
     }
 
@@ -58,7 +72,19 @@ public class ArbolBinarioCompleto<T> extends ArbolBinario<T> {
      */
     @Override public void agrega(T elemento) {
         // Aquí va su código.
+        if (elemento == null)
+            throw new IllegalArgumentException();
+        
+        if (esVacia()){
+            Vertice v = nuevoVertice(elemento);
+            raiz = v;
+            elementos = 1;
+        }
+        
+        
+        
     }
+    
 
     /**
      * Elimina un elemento del árbol. El elemento a eliminar cambia lugares con
@@ -77,6 +103,17 @@ public class ArbolBinarioCompleto<T> extends ArbolBinario<T> {
      */
     @Override public int altura() {
         // Aquí va su código.
+        return log(elementos);
+    }
+    
+    private int log(int n) {
+        int r = 0;
+        while(n > 1) {
+            n /= 2;
+            r++;
+        }
+        
+        return r;
     }
 
     /**

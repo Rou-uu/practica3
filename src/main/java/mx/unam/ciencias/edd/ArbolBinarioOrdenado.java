@@ -26,16 +26,31 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
         /* Inicializa al iterador. */
         private Iterador() {
             // Aquí va su código.
+            pila.mete(raiz);
         }
 
         /* Nos dice si hay un elemento siguiente. */
         @Override public boolean hasNext() {
             // Aquí va su código.
+            return !pila.esVacia();
         }
 
         /* Regresa el siguiente elemento en orden DFS in-order. */
         @Override public T next() {
             // Aquí va su código.
+            if (hasNext()) {
+                Vertice temp = pila.saca();
+                
+                if (temp.izquierdo != null)
+                    pila.mete(temp.izquierdo);
+                
+                if (temp.derecho != null)
+                    pila.mete(temp.derecho);
+                
+                return temp.elemento;
+            }
+            
+            return null;
         }
     }
 
@@ -70,6 +85,23 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
      */
     @Override public void agrega(T elemento) {
         // Aquí va su código.
+        Vertice actual = raiz;
+        Vertice padre = null;
+        
+        while (actual != null) {
+            padre = actual;
+            if (elemento.compareTo(actual.elemento) > 0)
+                actual = actual.derecho;
+            else 
+                actual = actual.izquierdo;
+        }
+        
+        if (elemento.compareTo(padre.elemento) > 0)
+            padre.derecho = nuevoVertice(elemento);
+        
+        else 
+            padre.izquierdo = nuevoVertice(elemento);
+        
     }
 
     /**
@@ -138,6 +170,12 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
      */
     public void giraDerecha(VerticeArbolBinario<T> vertice) {
         // Aquí va su código.
+        if (esVacia() || vertice == null)
+            return;
+        
+        Vertice v = vertice(vertice);
+        
+        
     }
 
     /**
