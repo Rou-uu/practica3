@@ -196,7 +196,7 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
          */
         @Override public String toString() {
             // Aquí va su código.
-            return "";
+            return elemento.toString();
         }
     }
 
@@ -373,7 +373,7 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
         if (!v.elemento.equals(x.elemento))
             return false;
         
-        return true && equals(v.izquierdo, x.izquierdo) && equals(v.derecho, x.derecho);
+        return equals(v.izquierdo, x.izquierdo) && equals(v.derecho, x.derecho);
     }
 
     /**
@@ -382,7 +382,48 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
      */
     @Override public String toString() {
         // Aquí va su código.
-        return "";
+        if (raiz == null)
+            return "";
+
+        return toString(raiz);
+    }
+
+    private String toString(Vertice temp) {
+        String r = "";
+
+        for (int i = 1; i < temp.profundidad(); i++) {
+            r = r + "  ";
+        }
+
+        if(temp != raiz) {
+            if (!(temp.profundidad() == 1))
+                r = "│" + r;
+
+            if (temp.profundidad() >= 1)
+                if (temp.padre.derecho == temp)
+                    r += "└─";
+                else
+                    r += "├─";
+
+            if (temp.padre.izquierdo == temp)
+                r += "›" + temp.elemento + "\n";
+
+            else
+                r += "»" + temp.elemento + "\n";
+        }
+        else
+            r = temp.elemento.toString() + "\n";
+
+        String a = "", b = "";
+
+        if (temp.izquierdo != null)
+            a = toString(temp.izquierdo);
+
+        if (temp.derecho != null)
+            b = toString(temp.derecho);
+
+
+        return r + a + b;
     }
 
     /**
