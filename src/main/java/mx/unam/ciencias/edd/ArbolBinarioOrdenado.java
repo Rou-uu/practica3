@@ -93,26 +93,30 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
         Vertice temp = nuevoVertice(elemento);
         
         while (actual != null) {
-            if (elemento.compareTo(actual.elemento) > 0) {
-                if (actual.derecho == null) {
-                    actual.derecho = temp;
-                    temp.padre = actual;
-                    return;
-                }
-
+            padre = actual;
+            if (elemento.compareTo(padre.elemento) > 0)
                 actual = actual.derecho;
-            }
 
-            else {
-                if (actual.izquierdo == null) {
-                    actual.izquierdo = temp;
-                    temp.padre = actual;
-                    return;
-                }
-
+            else
                 actual = actual.izquierdo;
-            }
         }
+
+        if (padre == null)
+            raiz = temp;
+
+        else if(elemento.compareTo(padre.elemento) > 0) {
+            padre.derecho = temp;
+            temp.padre = padre;
+        }
+
+        else  {
+            padre.izquierdo = temp;
+            temp.padre = padre;
+        }
+
+        ultimoAgregado = temp;
+
+        elementos++;
     }
 
     /**
@@ -123,6 +127,77 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
      */
     @Override public void elimina(T elemento) {
         // Aquí va su código.
+        Vertice eliminar = vertice(busca(elemento));
+
+        if (eliminar == null)
+            return;
+
+        if(cantidadDeHijos(eliminar) == 0) {
+            if (eliminar.padre != null) {
+                if (eliminar.padre.izquierdo == eliminar)
+                    eliminar.padre.izquierdo = null;
+
+                else
+                    eliminar.padre.derecho = null;
+
+                eliminar.padre = null;
+                elementos--;
+                return;
+            } else {
+                limpia();
+            }
+        }
+
+        if (cantidadDeHijos(eliminar) == 1) {
+            eliminaVertice(eliminar);
+            return;
+        }
+
+        Vertice sucesor = encontrarSustituto(eliminar);
+        if (sucesor.derecho != null) {
+            sucesor.padre.izquierdo  = sucesor.derecho;
+            sucesor.derecho.padre = sucesor.padre;
+        }
+
+        sucesor.padre = eliminar.padre;
+        sucesor.izquierdo = eliminar.izquierdo;
+        sucesor.derecho = eliminar.izquierdo;
+
+        if (eliminar.padre != null) {
+            if (eliminar.padre.izquierdo == eliminar)
+                eliminar.padre.izquierdo = sucesor;
+            else
+                eliminar.padre.derecho = sucesor;
+        }
+        eliminar.izquierdo.padre = sucesor;
+        eliminar.derecho.padre = sucesor;
+
+        elementos--;
+
+    }
+
+    private int cantidadDeHijos(Vertice v) {
+        if (v.derecho == null && v.izquierdo == null)
+            return 0;
+
+        if (v.derecho != null && v.izquierdo != null)
+            return 2;
+
+        return 1;
+    }
+
+    private Vertice encontrarSustituto(Vertice v) {
+        if (v == null)
+            return null;
+
+        Vertice actual = v.derecho;
+
+
+        while (actual.izquierdo != null)
+            actual = actual.izquierdo;
+
+        return actual;
+
     }
 
     /**
@@ -151,11 +226,36 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
             return;
 
         if (vertice.padre != null) {
-            if (vertice.derecho != null) {
-                vertice.derecho.padre = vertice.padre;
+            Vertice p = vertice.padre;
+            Vertice sustituto = null;
+
+            if (vertice.izquierdo != null)
+                sustituto = vertice.izquierdo;
+
+            else
+                sustituto = vertice.derecho;
+
+            if (p.izquierdo == vertice) {
+                p.izquierdo = sustituto;
+                sustituto.padre = p;
+                elementos--;
                 return;
             }
-            vertice.izquierdo.padre = vertice.padre;
+
+            p.derecho = sustituto;
+            sustituto.padre = p;
+            elementos--;
+        }
+
+        else {
+            if (vertice.izquierdo != null)
+                vertice.izquierdo.padre = null;
+
+            else
+                vertice.derecho.padre = null;
+
+            vertice.derecho = vertice.izquierdo = null;
+            elementos--;
         }
     }
 

@@ -247,7 +247,22 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
      */
     public int altura() {
         // Aquí va su código.
+        if (raiz == null)
+            return 0;
+
         return raiz.altura();
+    }
+
+    private int altura(Vertice v) {
+        if (v == null)
+            return -1;
+        return 1 + max(altura(v.izquierdo), altura(v.derecho));
+    }
+
+    private int max (int a,  int b) {
+        if (a > b)
+            return a;
+        return b;
     }
 
     /**
