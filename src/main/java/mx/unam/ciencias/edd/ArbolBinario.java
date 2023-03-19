@@ -411,14 +411,18 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
         }
 
         if(temp != raiz) {
-            if (!(temp.profundidad() == 1))
+            if (!(temp.profundidad() == 1) && !soyDerecho(temp))
                 r = "│" + r;
 
+            if (soyDerecho(temp) && temp.profundidad() != 1) {
+                r = " " + r;
+            }
+
             if (temp.profundidad() >= 1)
-                if (temp.padre.derecho == temp)
-                    r += "└─";
-                else
+                if (temp.padre.izquierdo == temp && temp.padre.derecho != null)
                     r += "├─";
+                else
+                    r += "└─";
 
             if (temp.padre.izquierdo == temp)
                 r += "›" + temp.elemento + "\n";
@@ -439,6 +443,21 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
 
 
         return r + a + b;
+    }
+
+    private boolean soyDerecho(Vertice v) {
+        if (v == null) {
+            return false;
+        }
+        Vertice temp = v;
+
+        while (v != raiz) {
+            temp = v;
+            v = v.padre;
+        }
+
+        return !(v.izquierdo == temp);
+
     }
 
     /**

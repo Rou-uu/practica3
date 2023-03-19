@@ -191,12 +191,13 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
             return null;
 
         Vertice actual = v.derecho;
+        Vertice padre = actual;
 
-
-        while (actual.izquierdo != null)
+        while (actual != null) {
+            padre = actual;
             actual = actual.izquierdo;
-
-        return actual;
+        }
+        return padre;
 
     }
 
@@ -328,13 +329,9 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
         p.derecho = q;
         q.padre = p;
         q.izquierdo = s;
-        q.derecho = t;
 
         if (s != null)
             s.padre = q;
-
-        if (t != null)
-            t.padre = q;
 
         if (a != null) {
             p.padre = a;
@@ -364,11 +361,11 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
 
         Vertice q =  vertice(vertice);
 
-        if(!q.hayIzquierdo())
+        if(!q.hayDerecho())
             return;
 
         //Variables temporales
-        Vertice p = q.izquierdo;
+        Vertice p = q.derecho;
         Vertice r = p.izquierdo;
         Vertice s = p.derecho;
         Vertice t = q.derecho;
@@ -377,16 +374,12 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
         if (q.padre != null)
             a = q.padre;
 
-        p.derecho = q;
+        p.izquierdo = q;
         q.padre = p;
         q.izquierdo = s;
-        q.derecho = t;
 
         if (s != null)
             s.padre = q;
-
-        if (t != null)
-            t.padre = q;
 
         if (a != null) {
             p.padre = a;
