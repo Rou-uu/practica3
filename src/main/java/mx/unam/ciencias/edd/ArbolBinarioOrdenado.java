@@ -310,36 +310,46 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
         if (esVacia() || vertice == null)
             return;
         
-        Vertice n =  vertice(vertice);
+        Vertice q =  vertice(vertice);
 
-        if(!n.hayIzquierdo())
+        if(!q.hayIzquierdo())
             return;
 
         //Variables temporales
-        Vertice a = n.izquierdo;
-        Vertice b = n.padre;
-        Vertice c = a.derecho;
+        Vertice p = q.izquierdo;
+        Vertice r = p.izquierdo;
+        Vertice s = p.derecho;
+        Vertice t = q.derecho;
+        Vertice a = null;
 
-        //En caso de que n no sea raiz, hay que cambiar las referencias del padre de n a que su hijo (depende si es izquiedo o derecho) sea el hijo de n (a)
-        if (b != null) {
-            if (n.padre.derecho == n)
-                b.derecho = a;
+        if (q.padre != null)
+            a = q.padre;
+
+        p.derecho = q;
+        q.padre = p;
+        q.izquierdo = s;
+        q.derecho = t;
+
+        if (s != null)
+            s.padre = q;
+
+        if (t != null)
+            t.padre = q;
+
+        if (a != null) {
+            p.padre = a;
+
+            if(a.derecho == q)
+                a.derecho = p;
 
             else
-                b.izquierdo = a;
-
-            a.padre = b;
+                a.izquierdo = p;
         }
 
-        //El cambio de que ahora n es el hijo de a (no hace falta mover si es izquiedo o derecho pq siempre va a ser izquierdo)
-        n.padre = a;
-        a.derecho = n;
-
-        //Le pasa el hijo izquierdo de a a n
-        c.padre = n;
-        n.izquierdo = c;
-
-
+        else {
+            p.padre = null;
+            raiz = p;
+        }
     }
 
     /**
@@ -352,34 +362,46 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
         if (esVacia() || vertice == null)
             return;
 
-        Vertice n =  vertice(vertice);
+        Vertice q =  vertice(vertice);
 
-        if(!n.hayDerecho())
+        if(!q.hayIzquierdo())
             return;
 
         //Variables temporales
-        Vertice a = n.derecho;
-        Vertice b = n.padre;
-        Vertice c = a.derecho;
+        Vertice p = q.izquierdo;
+        Vertice r = p.izquierdo;
+        Vertice s = p.derecho;
+        Vertice t = q.derecho;
+        Vertice a = null;
 
-        //En caso de que n no sea raiz, hay que cambiar las referencias del padre de n a que su hijo (depende si es izquiedo o derecho) sea el hijo de n (a)
-        if (b != null) {
-            if (n.padre.derecho == n)
-                b.derecho = a;
+        if (q.padre != null)
+            a = q.padre;
+
+        p.derecho = q;
+        q.padre = p;
+        q.izquierdo = s;
+        q.derecho = t;
+
+        if (s != null)
+            s.padre = q;
+
+        if (t != null)
+            t.padre = q;
+
+        if (a != null) {
+            p.padre = a;
+
+            if(a.derecho == q)
+                a.derecho = p;
 
             else
-                b.izquierdo = a;
-
-            a.padre = b;
+                a.izquierdo = p;
         }
 
-        //El cambio de que ahora n es el hijo de b (no hace falta mover si es izquiedo o derecho pq siempre va a ser izquierdo)
-        n.padre = a;
-        a.izquierdo = n;
-
-        //Le pasa el hijo izquierdo de a a n
-        c.padre = n;
-        n.derecho = c;
+        else {
+            p.padre = null;
+            raiz = p;
+        }
     }
 
     /**
