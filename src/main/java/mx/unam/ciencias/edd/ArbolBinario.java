@@ -118,7 +118,16 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
             if (v == null)
                 return -1;
 
-            return 1 + Math.max(altura(v.izquierdo), altura(v.derecho));
+            int a = altura(v.izquierdo);
+            int b = altura(v.derecho);
+            return 1 + max(a, b);
+        }
+
+        private int max(int a, int b) {
+            if (a > b)
+                return a;
+
+            return b;
         }
 
         /**
@@ -131,10 +140,10 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
         }
 
         private int profundidad(Vertice v) {
-            if (v == null) 
+            if (v == null)
                 return -1;
 
-            return profundidad(v.padre) + 1;
+            return 1 + profundidad(v.padre);
         }
 
         /**
@@ -161,18 +170,24 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
                 return false;
             @SuppressWarnings("unchecked") Vertice vertice = (Vertice)objeto;
             // Aquí va su código.
-            if (this == null && vertice == null)
-                return true;
-
-            if (this == null || vertice == null)
+            if (!elemento.equals(vertice.elemento)) {
                 return false;
-
-            if (!elemento.equals(vertice.elemento))
+            }
+            if (izquierdo == null) {
+                if (vertice.izquierdo != null) {
+                    return false;
+                }
+            } else if (!izquierdo.equals(vertice.izquierdo)) {
                 return false;
-
-            return true && izquierdo.equals(vertice.izquierdo) && derecho.equals(vertice.derecho);
-            
-            
+            }
+            if (derecho == null) {
+                if (vertice.derecho != null) {
+                    return false;
+                }
+            } else if (!derecho.equals(vertice.derecho)) {
+                return false;
+            }
+            return true;
         }
 
         /**
@@ -277,20 +292,25 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
      */
     public VerticeArbolBinario<T> busca(T elemento) {
         // Aquí va su código.
-        return (VerticeArbolBinario) busca(raiz, elemento);
-    }
+        if (esVacia())
+            return null;
 
-    private Vertice busca(Vertice v, T elemento) {
-        if (v == null || v.elemento.equals(elemento))
-            return v;
-        
-        Vertice temp1 = busca(v.izquierdo, elemento);
-        Vertice temp2 = busca(v.derecho, elemento);
-        
-        if (temp2 != null)
-            return temp1;
-        
-        return temp2;
+        Cola<Vertice> cola = new Cola<>();
+        cola.mete(raiz);
+
+        while (!cola.esVacia()) {
+            Vertice n = cola.saca();
+            if (n.elemento.equals(elemento))
+                return n;
+
+            if (n.hayDerecho())
+                cola.mete(n.derecho);
+
+            if (n.hayIzquierdo())
+                cola.mete(n.izquierdo);
+        }
+
+        return null;
     }
 
     /**
@@ -303,7 +323,7 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
         if (esVacia())
             throw new NoSuchElementException();
         
-        return raiz;
+        return (VerticeArbolBinario<T>) raiz;
     }
 
     /**

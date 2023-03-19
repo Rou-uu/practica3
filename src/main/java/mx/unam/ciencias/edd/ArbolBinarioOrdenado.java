@@ -26,7 +26,10 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
         /* Inicializa al iterador. */
         private Iterador() {
             // Aquí va su código.
-            pila.mete(raiz);
+            pila = new Pila<Vertice>();
+
+            if (raiz != null)
+                pila.mete(raiz);
         }
 
         /* Nos dice si hay un elemento siguiente. */
@@ -133,6 +136,7 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
      */
     protected Vertice intercambiaEliminable(Vertice vertice) {
         // Aquí va su código.
+        return vertice;
     }
 
     /**
@@ -143,6 +147,16 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
      */
     protected void eliminaVertice(Vertice vertice) {
         // Aquí va su código.
+        if (vertice == null || (vertice.derecho != null && vertice.izquierdo != null))
+            return;
+
+        if (vertice.padre != null) {
+            if (vertice.derecho != null) {
+                vertice.derecho.padre = vertice.padre;
+                return;
+            }
+            vertice.izquierdo.padre = vertice.padre;
+        }
     }
 
     /**

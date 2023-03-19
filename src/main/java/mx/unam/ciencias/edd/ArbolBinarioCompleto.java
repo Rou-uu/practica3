@@ -19,7 +19,10 @@ public class ArbolBinarioCompleto<T> extends ArbolBinario<T> {
         /* Inicializa al iterador. */
         private Iterador() {
             // Aquí va su código.
-            cola.mete(raiz);
+            cola = new Cola<Vertice>();
+
+            if(raiz != null)
+                cola.mete(raiz);
         }
 
         /* Nos dice si hay un elemento siguiente. */
@@ -31,19 +34,16 @@ public class ArbolBinarioCompleto<T> extends ArbolBinario<T> {
         /* Regresa el siguiente elemento en orden BFS. */
         @Override public T next() {
             // Aquí va su código.
-            if (hasNext()) {
-                Vertice temp = cola.saca();
+            Vertice temp = cola.saca();
+
+            if (temp.izquierdo != null)
+                cola.mete(temp.izquierdo);
                 
-                if (temp.izquierdo != null)
-                    cola.mete(temp.izquierdo);
-                
-                if (temp.derecho != null)
-                    cola.mete(temp.derecho);
-                
-                return temp.elemento;
-            }
-            
-            return null;
+            if (temp.derecho != null)
+                cola.mete(temp.derecho);
+
+            return temp.elemento;
+
         }
     }
 
@@ -79,6 +79,7 @@ public class ArbolBinarioCompleto<T> extends ArbolBinario<T> {
             Vertice v = nuevoVertice(elemento);
             raiz = v;
             elementos = 1;
+            return;
         }
 
         Cola<Vertice> cola = new Cola<Vertice>();
@@ -91,6 +92,7 @@ public class ArbolBinarioCompleto<T> extends ArbolBinario<T> {
                 Vertice temp = nuevoVertice(elemento);
                 n.izquierdo = temp;
                 temp.padre = n;
+                elementos++;
                 return;
             }
 
@@ -98,6 +100,7 @@ public class ArbolBinarioCompleto<T> extends ArbolBinario<T> {
                 Vertice temp = nuevoVertice(elemento);
                 n.derecho = temp;
                 temp.padre = n;
+                elementos++;
                 return;
             }
 
@@ -118,62 +121,41 @@ public class ArbolBinarioCompleto<T> extends ArbolBinario<T> {
         if(esVacia() || elemento == null)
             return;
 
-        if (elementos == 1) {
-            if (raiz.elemento.equals(elemento)) {
-                limpia();
-            } return;
-        }
+        Vertice eliminar = vertice(busca(elemento));
+
+        if (eliminar == null) //Si no hay vertice con ese elemento, regresamos
+            return;
 
         Cola<Vertice> cola = new Cola<>();
         cola.mete(raiz);
 
-        Vertice ultimo = null;
-
+        Vertice ultimo = null; //Buscamos el ultimo vertice agregado
         while (!cola.esVacia()) {
-            Vertice temp = cola.saca();
-            ultimo = temp;
+            ultimo = cola.saca();
 
-            if (temp.izquierdo != null)
-                cola.mete(temp.izquierdo);
+            if (ultimo.izquierdo != null)
+                cola.mete(ultimo.izquierdo);
 
-            if (temp.derecho != null)
-                cola.mete(temp.derecho);
+            if (ultimo.derecho != null)
+                cola.mete(ultimo.derecho);
         }
 
-        cola.mete(raiz);
+        T temp = ultimo.elemento;
+        ultimo.elemento = eliminar.elemento;
+        eliminar.elemento = temp;
 
-        while (!cola.esVacia()) {
-            Vertice n = cola.saca();
+        if (ultimo.padre != null) {
+            if (ultimo.padre.izquierdo == ultimo)
+                ultimo.padre.izquierdo = null;
+            else
+                ultimo.padre.derecho = null;
 
-            if (n.elemento.equals(elemento)) {
-                //Quitar referencias del padre del ultimo elemento, el cual es que vamos a intercambiar
-                if (ultimo.padre.derecho == null)
-                    ultimo.padre.izquierdo = null;
-                else
-                    ultimo.padre.derecho = null;
-
-                ultimo.padre = n.padre; //La referencia para que el padre de nuestro ultimo elemento sea el padre de n
-
-                //Si n es el hijo izquierdo, ahora lo cambiamos por ultimo, sino, cambiamos el derecho
-                if (n.padre.izquierdo == n)
-                    n.padre.izquierdo = ultimo;
-                else
-                    n.padre.derecho = ultimo;
-
-                //Hay que cambiar las referencias de los padres de los hijos de n a último (Solo si no son null)
-                if(n.izquierdo != null)
-                    n.izquierdo.padre = ultimo;
-                if(n.derecho != null)
-                    n.derecho.padre = ultimo;
-
-                //Por ultimo las referencias de los hijos
-                ultimo.izquierdo = n.izquierdo;
-                ultimo.derecho = n.derecho;
-
-                return;
-            }
+            ultimo.padre = null;
+            elementos--;
         }
 
+        else
+            limpia();
     }
 
     /**
@@ -183,16 +165,20 @@ public class ArbolBinarioCompleto<T> extends ArbolBinario<T> {
      */
     @Override public int altura() {
         // Aquí va su código.
+        if (esVacia())
+            return -1;
+
         return log(elementos);
     }
-    
+
     private int log(int n) {
         int r = 0;
-        while(n > 1) {
-            n /= 2;
+        int temp = n;
+        while(temp > 1) {
+            temp = temp / 2;
             r++;
         }
-        
+
         return r;
     }
 
