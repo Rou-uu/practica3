@@ -25,7 +25,7 @@ public class ArbolBinarioCompleto<T> extends ArbolBinario<T> {
         /* Nos dice si hay un elemento siguiente. */
         @Override public boolean hasNext() {
             // Aquí va su código.
-            return cola.esVacia();
+            return !cola.esVacia();
         }
 
         /* Regresa el siguiente elemento en orden BFS. */
@@ -118,12 +118,18 @@ public class ArbolBinarioCompleto<T> extends ArbolBinario<T> {
         if(esVacia() || elemento == null)
             return;
 
+        if (elementos == 1) {
+            if (raiz.elemento.equals(elemento)) {
+                limpia();
+            } return;
+        }
+
         Cola<Vertice> cola = new Cola<>();
         cola.mete(raiz);
 
         Vertice ultimo = null;
 
-        while (!cola.esVacia()){
+        while (!cola.esVacia()) {
             Vertice temp = cola.saca();
             ultimo = temp;
 
@@ -134,11 +140,37 @@ public class ArbolBinarioCompleto<T> extends ArbolBinario<T> {
                 cola.mete(temp.derecho);
         }
 
+        cola.mete(raiz);
+
         while (!cola.esVacia()) {
             Vertice n = cola.saca();
 
             if (n.elemento.equals(elemento)) {
+                //Quitar referencias del padre del ultimo elemento, el cual es que vamos a intercambiar
+                if (ultimo.padre.derecho == null)
+                    ultimo.padre.izquierdo = null;
+                else
+                    ultimo.padre.derecho = null;
 
+                ultimo.padre = n.padre; //La referencia para que el padre de nuestro ultimo elemento sea el padre de n
+
+                //Si n es el hijo izquierdo, ahora lo cambiamos por ultimo, sino, cambiamos el derecho
+                if (n.padre.izquierdo == n)
+                    n.padre.izquierdo = ultimo;
+                else
+                    n.padre.derecho = ultimo;
+
+                //Hay que cambiar las referencias de los padres de los hijos de n a último (Solo si no son null)
+                if(n.izquierdo != null)
+                    n.izquierdo.padre = ultimo;
+                if(n.derecho != null)
+                    n.derecho.padre = ultimo;
+
+                //Por ultimo las referencias de los hijos
+                ultimo.izquierdo = n.izquierdo;
+                ultimo.derecho = n.derecho;
+
+                return;
             }
         }
 
