@@ -27,9 +27,17 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
         private Iterador() {
             // Aquí va su código.
             pila = new Pila<Vertice>();
+            Vertice aux = null;
 
-            if (raiz != null)
+            if (raiz != null) {
                 pila.mete(raiz);
+                aux = raiz.izquierdo;
+            }
+
+            while (aux != null) {
+                pila.mete(aux);
+                aux = aux.izquierdo;
+            }
         }
 
 
@@ -44,17 +52,17 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
             // Aquí va su código.
             Vertice temp = pila.saca();
 
-            if (temp.izquierdo != null)
-                pila.mete(temp.izquierdo);
-
-            if (temp.derecho != null)
+            if (temp.derecho != null) {
                 pila.mete(temp.derecho);
+                Vertice aux = temp.derecho.izquierdo;
+
+                while (aux != null) {
+                    pila.mete(aux);
+                    aux = aux.izquierdo;
+                }
+            }
 
             return temp.elemento;
-        }
-
-        public Pila<Vertice> regresa() {
-            return pila;
         }
     }
 
@@ -89,6 +97,7 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
      */
     @Override public void agrega(T elemento) {
         // Aquí va su código.
+
         Vertice nuevo = new Vertice(elemento);
 
         // Si el árbol está vacío, el nuevo vértice será la raíz.
@@ -141,7 +150,8 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
         if (eliminar == null)
             return;
 
-        if(cantidadDeHijos(eliminar) == 0) {
+        /*
+        if (eliminar.izquierdo == null && eliminar.derecho == null) {
             if (eliminar.padre != null) {
                 if (eliminar.padre.izquierdo == eliminar)
                     eliminar.padre.izquierdo = null;
@@ -150,69 +160,22 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
                     eliminar.padre.derecho = null;
 
                 eliminar.padre = null;
-                elementos--;
-                return;
-            } else {
-                limpia();
-            }
-        }
 
-        if (cantidadDeHijos(eliminar) == 1) {
+                elementos--;
+            } else limpia();
+        }*/
+
+        if (!(eliminar.derecho != null && eliminar.izquierdo != null)) {
+            if (eliminar.padre == null && eliminar.derecho == null && eliminar.izquierdo == null && eliminar.elemento.equals(elemento)) {
+                limpia();
+                return;
+            }
             eliminaVertice(eliminar);
             return;
         }
 
-        Vertice sucesor = encontrarSustituto(eliminar);
-        if (sucesor != null && sucesor.derecho != null) {
-            sucesor.padre.izquierdo  = sucesor.derecho;
-            sucesor.derecho.padre = sucesor.padre;
-
-            sucesor.padre = eliminar.padre;
-            sucesor.izquierdo = eliminar.izquierdo;
-            sucesor.derecho = eliminar.izquierdo;
-        }
-
-        if (eliminar.padre != null) {
-            if (eliminar.padre.izquierdo == eliminar)
-                eliminar.padre.izquierdo = sucesor;
-            else
-                eliminar.padre.derecho = sucesor;
-        }
-        if(eliminar.izquierdo != null)
-            eliminar.izquierdo.padre = sucesor;
-        if (eliminar.derecho != null)
-            eliminar.derecho.padre = sucesor;
-
-        elementos--;
-    }
-
-    private int cantidadDeHijos(Vertice v) {
-        if (v.derecho == null && v.izquierdo == null)
-            return 0;
-
-        if (v.derecho != null && v.izquierdo != null)
-            return 2;
-
-        return 1;
-    }
-
-    private Vertice encontrarSustituto(Vertice v) {
-        if (v == null)
-            return null;
-
-        if (v.hayDerecho()) {
-            Vertice actual = v.derecho;
-            while (actual.hayIzquierdo())
-                actual = actual.izquierdo;
-            return actual;
-        }
-
-        Vertice actual = v.padre;
-        while (actual != null && actual.derecho == v) {
-            v = actual;
-            actual = actual.padre;
-        }
-        return actual;
+        Vertice aux = intercambiaEliminable(eliminar);
+        eliminaVertice(aux);
 
     }
 
@@ -227,7 +190,45 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
      */
     protected Vertice intercambiaEliminable(Vertice vertice) {
         // Aquí va su código.
+        if (vertice  == null)
+            return null;
+
+        Vertice temp = vertice.izquierdo; //Nos vamos al subarbol izquierdo
+        if (!(temp == null)) {
+            while (temp != null) {
+                if (temp.derecho != null)
+                    temp = temp.derecho;
+
+                else
+                    break;
+            }
+
+            T element = vertice.elemento;
+            vertice.elemento = temp.elemento;
+            temp.elemento = element;
+
+            return temp;
+        }
+
+        temp = vertice.derecho;
+        if (!(temp == null)) {
+            while (temp != null) {
+                if (temp.izquierdo != null)
+                    temp = temp.izquierdo;
+
+                else
+                    break;
+            }
+
+            T element = vertice.elemento;
+            vertice.elemento = temp.elemento;
+            temp.elemento = element;
+
+            return temp;
+        }
+
         return vertice;
+
     }
 
     /**
@@ -240,6 +241,20 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
         // Aquí va su código.
         if (vertice == null || (vertice.derecho != null && vertice.izquierdo != null))
             return;
+
+        if (vertice.derecho == null && vertice.izquierdo == null) {
+            if (vertice.padre != null) {
+                if (vertice.padre.derecho == vertice)
+                    vertice.padre.derecho = null;
+
+                else
+                    vertice.padre.izquierdo = null;
+
+                vertice.padre  = null;
+                elementos--;
+
+            }
+        }
 
         if (vertice.padre != null) {
             Vertice p = vertice.padre;
@@ -264,14 +279,17 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
         }
 
         else {
-            if (vertice.izquierdo != null)
+            if (vertice.izquierdo != null) {
                 vertice.izquierdo.padre = null;
+                raiz = vertice.izquierdo;
+                elementos--;
+            }
 
-            else
+            else if (vertice.derecho != null) {
                 vertice.derecho.padre = null;
-
-            vertice.derecho = vertice.izquierdo = null;
-            elementos--;
+                raiz = vertice.derecho;
+                elementos--;
+            }
         }
     }
 
