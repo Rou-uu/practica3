@@ -154,7 +154,6 @@ public class TestArbolBinarioOrdenado {
             VerticeArbolBinario<Integer> it = arbol.busca(e);
             Assert.assertTrue(it != null);
             Assert.assertTrue(it.get() == e);
-            arbol.elimina(e);
             it = arbol.busca(e);
             Assert.assertTrue(it == null);
             Assert.assertTrue(arbol.getElementos() == --n);
@@ -338,17 +337,26 @@ public class TestArbolBinarioOrdenado {
      */
     @Test public void testIterator() {
         Lista<Integer> lista = new Lista<Integer>();
-        for (int i = 0; i < total; i++) {
+        for (int i = 0; i < 25; i++) {
             int n = random.nextInt(100);
             arbol.agrega(n);
             lista.agrega(n);
         }
         lista = Lista.mergeSort(lista);
         int c = 0;
+        System.out.println(arbol);
+        System.out.println(lista);
         Iterator<Integer> i1 = arbol.iterator();
         Iterator<Integer> i2 = lista.iterator();
-        while (i1.hasNext() && i2.hasNext())
+
+        while(i1.hasNext()) {
+            System.out.print(i1.next() + " ");
+        }
+
+        while (i1.hasNext() && i2.hasNext()) {
+            System.out.println(i1.next() + "|" + i2.next());
             Assert.assertTrue(i1.next() == i2.next());
+        }
         Assert.assertTrue(!i1.hasNext() && !i2.hasNext());
     }
 

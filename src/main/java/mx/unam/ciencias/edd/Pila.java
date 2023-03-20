@@ -37,6 +37,7 @@ public class Pila<T> extends MeteSaca<T> {
 
         Nodo n = new Nodo(elemento);
 
+        /*
         if (esVacia()) {
             cabeza = n;
             rabo = n;
@@ -45,10 +46,20 @@ public class Pila<T> extends MeteSaca<T> {
 
         Nodo aux = cabeza;
 
-        while (aux != rabo)
+        while (aux.siguiente != null)
             aux = aux.siguiente;
 
         aux.siguiente = n;
+        rabo = n;
+        */
+
+        if (esVacia()) {
+            cabeza = n;
+            rabo = n;
+            return;
+        }
+
+        rabo.siguiente = n;
         rabo = n;
 
     }

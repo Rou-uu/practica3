@@ -32,6 +32,7 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
                 pila.mete(raiz);
         }
 
+
         /* Nos dice si hay un elemento siguiente. */
         @Override public boolean hasNext() {
             // Aquí va su código.
@@ -41,19 +42,19 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
         /* Regresa el siguiente elemento en orden DFS in-order. */
         @Override public T next() {
             // Aquí va su código.
-            if (hasNext()) {
-                Vertice temp = pila.saca();
-                
-                if (temp.izquierdo != null)
-                    pila.mete(temp.izquierdo);
-                
-                if (temp.derecho != null)
-                    pila.mete(temp.derecho);
-                
-                return temp.elemento;
-            }
-            
-            return null;
+            Vertice temp = pila.saca();
+
+            if (temp.izquierdo != null)
+                pila.mete(temp.izquierdo);
+
+            if (temp.derecho != null)
+                pila.mete(temp.derecho);
+
+            return temp.elemento;
+        }
+
+        public Pila<Vertice> regresa() {
+            return pila;
         }
     }
 
@@ -88,35 +89,43 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
      */
     @Override public void agrega(T elemento) {
         // Aquí va su código.
+        Vertice nuevo = new Vertice(elemento);
+
+        // Si el árbol está vacío, el nuevo vértice será la raíz.
+        if (raiz == null) {
+            raiz = nuevo;
+            elementos++;
+            ultimoAgregado = nuevo;
+            return;
+        }
+
+        // Buscamos el lugar donde debemos insertar el nuevo vértice.
         Vertice actual = raiz;
         Vertice padre = null;
-        Vertice temp = nuevoVertice(elemento);
-        
+
         while (actual != null) {
             padre = actual;
-            if (elemento.compareTo(padre.elemento) > 0)
-                actual = actual.derecho;
 
-            else
+            if (elemento.compareTo(actual.elemento) < 0) {
                 actual = actual.izquierdo;
+            }
+
+            else {
+                actual = actual.derecho;
+            }
         }
 
-        if (padre == null)
-            raiz = temp;
-
-        else if(elemento.compareTo(padre.elemento) > 0) {
-            padre.derecho = temp;
-            temp.padre = padre;
+        // Insertamos el nuevo vértice en su lugar correspondiente.
+        if (elemento.compareTo(padre.elemento) < 0) {
+            padre.izquierdo = nuevo;
         }
 
-        else  {
-            padre.izquierdo = temp;
-            temp.padre = padre;
+        else {
+            padre.derecho = nuevo;
         }
-
-        ultimoAgregado = temp;
-
+        nuevo.padre = padre;
         elementos++;
+        ultimoAgregado = nuevo;
     }
 
     /**
@@ -154,14 +163,14 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
         }
 
         Vertice sucesor = encontrarSustituto(eliminar);
-        if (sucesor.derecho != null) {
+        if (sucesor != null && sucesor.derecho != null) {
             sucesor.padre.izquierdo  = sucesor.derecho;
             sucesor.derecho.padre = sucesor.padre;
-        }
 
-        sucesor.padre = eliminar.padre;
-        sucesor.izquierdo = eliminar.izquierdo;
-        sucesor.derecho = eliminar.izquierdo;
+            sucesor.padre = eliminar.padre;
+            sucesor.izquierdo = eliminar.izquierdo;
+            sucesor.derecho = eliminar.izquierdo;
+        }
 
         if (eliminar.padre != null) {
             if (eliminar.padre.izquierdo == eliminar)
@@ -169,11 +178,12 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
             else
                 eliminar.padre.derecho = sucesor;
         }
-        eliminar.izquierdo.padre = sucesor;
-        eliminar.derecho.padre = sucesor;
+        if(eliminar.izquierdo != null)
+            eliminar.izquierdo.padre = sucesor;
+        if (eliminar.derecho != null)
+            eliminar.derecho.padre = sucesor;
 
         elementos--;
-
     }
 
     private int cantidadDeHijos(Vertice v) {
@@ -190,14 +200,19 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
         if (v == null)
             return null;
 
-        Vertice actual = v.derecho;
-        Vertice padre = actual;
-
-        while (actual != null) {
-            padre = actual;
-            actual = actual.izquierdo;
+        if (v.hayDerecho()) {
+            Vertice actual = v.derecho;
+            while (actual.hayIzquierdo())
+                actual = actual.izquierdo;
+            return actual;
         }
-        return padre;
+
+        Vertice actual = v.padre;
+        while (actual != null && actual.derecho == v) {
+            v = actual;
+            actual = actual.padre;
+        }
+        return actual;
 
     }
 
@@ -310,7 +325,7 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
         // Aquí va su código.
         if (esVacia() || vertice == null)
             return;
-        
+
         Vertice q =  vertice(vertice);
 
         if(!q.hayIzquierdo())
@@ -361,14 +376,14 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
 
         Vertice q =  vertice(vertice);
 
-        if(!q.hayDerecho())
+        if(!vertice.hayDerecho())
             return;
 
-        //Variables temporales
+        //Se comprobo que si se puede
         Vertice p = q.derecho;
         Vertice r = p.izquierdo;
         Vertice s = p.derecho;
-        Vertice t = q.derecho;
+        Vertice t = q.izquierdo;
         Vertice a = null;
 
         if (q.padre != null)
@@ -376,12 +391,12 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
 
         p.izquierdo = q;
         q.padre = p;
-        q.izquierdo = s;
+        q.derecho = r;
 
-        if (s != null)
-            s.padre = q;
+        if (r != null)
+            r.padre = q;
 
-        if (a != null) {
+        if (a != null) { //Se queda igual
             p.padre = a;
 
             if(a.derecho == q)

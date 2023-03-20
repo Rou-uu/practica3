@@ -30,6 +30,9 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
          */
         protected Vertice(T elemento) {
             // Aquí va su código.
+            if (elemento == null)
+                throw new IllegalArgumentException();
+
             this.elemento = elemento;
             this.padre = null;
             this.izquierdo = null;
@@ -143,6 +146,9 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
             if (v == null)
                 return -1;
 
+            if (v.padre == null)
+                return 0;
+
             return 1 + profundidad(v.padre);
         }
 
@@ -247,10 +253,7 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
      */
     public int altura() {
         // Aquí va su código.
-        if (raiz == null)
-            return 0;
-
-        return raiz.altura();
+        return altura(raiz);
     }
 
     private int altura(Vertice v) {
@@ -348,10 +351,7 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
      */
     @Override public boolean esVacia() {
         // Aquí va su código.
-        if (raiz == null || elementos == 0)
-            return true;
-
-        return false;
+        return raiz == null;
     }
 
     /**
