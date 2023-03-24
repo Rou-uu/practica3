@@ -404,6 +404,7 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
     }
 
     private String toString(Vertice temp) {
+        /*
         String r = "";
 
         for (int i = 1; i < temp.profundidad(); i++) {
@@ -443,8 +444,67 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
 
 
         return r + a + b;
+        */
+
+        if (raiz == null)
+            return "";
+
+        int[] arr = new int[altura() + 1];
+
+        for (int i = 0; i < altura() + 1; i++) {
+            arr[i] = 0;
+        }
+
+        return toString(raiz, 0, arr);
+
     }
 
+    private String toString(Vertice v, int niv, int[] arr) {
+        String s = v.toString() + "\n";
+
+        arr[niv] = 1;
+
+        if (v.izquierdo != null && v.derecho != null) {
+            s = s + dibujaEspacios(niv, arr);
+            s = s + "├─›";
+            s = s + toString(v.izquierdo, niv + 1, arr);
+            s = s + dibujaEspacios(niv, arr);
+            s = s + "└─»";
+            arr[niv] = 0;
+            s = s + toString(v.derecho, niv + 1, arr);
+        }
+
+        else if (v.izquierdo != null) {
+            s = s + dibujaEspacios(niv, arr);
+            s = s + "└─›";
+            arr[niv] = 0;
+            s = s + toString(v.izquierdo, niv + 1, arr);
+        }
+
+        else if (v.derecho != null) {
+            s = s + dibujaEspacios(niv, arr);
+            s = s + "└─»";
+            arr[niv] = 0;
+            s  = s + toString(v.derecho, niv + 1, arr);
+        }
+
+        return s;
+    }
+
+    private String dibujaEspacios(int niv, int[] arr) {
+        String s = "";
+
+        for (int i = 0; i < niv; i++) {
+            if (arr[i] == 1)
+                s = s + "│  ";
+            else
+                s = s + "   ";
+        }
+
+        return s;
+    }
+
+    /*
     private boolean soyDerecho(Vertice v) {
         if (v == null) {
             return false;
@@ -458,7 +518,7 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
 
         return !(v.izquierdo == temp);
 
-    }
+    } */
 
     /**
      * Convierte el vértice (visto como instancia de {@link

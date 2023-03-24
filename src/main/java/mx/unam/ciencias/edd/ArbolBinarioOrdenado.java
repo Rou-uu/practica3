@@ -32,6 +32,7 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
             if (raiz != null) {
                 pila.mete(raiz);
                 aux = raiz.izquierdo;
+
             }
 
             while (aux != null) {
@@ -51,18 +52,18 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
         @Override public T next() {
             // Aquí va su código.
             Vertice temp = pila.saca();
-
+            T e = temp.get();
             if (temp.derecho != null) {
-                pila.mete(temp.derecho);
-                Vertice aux = temp.derecho.izquierdo;
-
-                while (aux != null) {
-                    pila.mete(aux);
-                    aux = aux.izquierdo;
+                //pila.mete(temp.derecho);
+                //Vertice aux = temp.derecho.izquierdo;
+                temp = temp.derecho;
+                while (temp != null) {
+                    pila.mete(temp);
+                    temp = temp.izquierdo;
                 }
             }
 
-            return temp.elemento;
+            return e;
         }
     }
 
@@ -98,7 +99,7 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
     @Override public void agrega(T elemento) {
         // Aquí va su código.
 
-        Vertice nuevo = new Vertice(elemento);
+        Vertice nuevo = nuevoVertice(elemento);
 
         // Si el árbol está vacío, el nuevo vértice será la raíz.
         if (raiz == null) {
@@ -132,6 +133,7 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
         else {
             padre.derecho = nuevo;
         }
+        
         nuevo.padre = padre;
         elementos++;
         ultimoAgregado = nuevo;
@@ -149,21 +151,6 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
 
         if (eliminar == null)
             return;
-
-        /*
-        if (eliminar.izquierdo == null && eliminar.derecho == null) {
-            if (eliminar.padre != null) {
-                if (eliminar.padre.izquierdo == eliminar)
-                    eliminar.padre.izquierdo = null;
-
-                else
-                    eliminar.padre.derecho = null;
-
-                eliminar.padre = null;
-
-                elementos--;
-            } else limpia();
-        }*/
 
         if (!(eliminar.derecho != null && eliminar.izquierdo != null)) {
             if (eliminar.padre == null && eliminar.derecho == null && eliminar.izquierdo == null && eliminar.elemento.equals(elemento)) {
